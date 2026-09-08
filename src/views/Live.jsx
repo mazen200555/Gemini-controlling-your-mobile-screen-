@@ -14,7 +14,7 @@ const GIFTS = [
 ]
 
 export default function Live() {
-  const { navTarget, toggleFollow, followed } = useApp()
+  const { navTarget, toggleFollow, followed, addXp } = useApp()
   const stream = STREAMS.find(s => s.id === navTarget?.streamId) || STREAMS[0]
   const host = userById(stream.host)
   const isFollowing = !!followed[host.id]
@@ -46,6 +46,7 @@ export default function Live() {
     if (!msg.trim()) return
     setMsgs(prev => [...prev.slice(-28), { id: Math.random(), author: 'you', text: msg.trim() }])
     setMsg('')
+    addXp(4, 'رسالة في البثّ')
   }
 
   const gift = (g) => {
@@ -53,6 +54,7 @@ export default function Live() {
     setFloats(prev => [...prev, { id: Math.random(), emoji: g.emoji, x }])
     setPulse(p => p + 1)
     notify(`أرسلت هدية ${g.name} 🎁`)
+    addXp(20, 'هدية')
     setTimeout(() => setFloats(prev => prev.filter(f => f.id !== 0)), 1)
     setTimeout(() => setFloats(prev => prev.slice(1)), 4200)
   }

@@ -265,3 +265,154 @@ export const CHAT_POOL = [
   { author: 'u8', text: 'OMG 😱 احتاج هذا المنتج' },
   { author: 'u10', text: 'المرآة الأولى لهذا المشروع' },
 ]
+
+// =============================================================
+// NEXA —  Extended "heavy" feature data
+// =============================================================
+
+// ---- GAMIFICATION / XP ---------------------------------------
+export const XP_LEVELS = [
+  { level: 1, name: 'مبتدئ', xp: 0, icon: '🌱' },
+  { level: 2, name: 'نشيط', xp: 200, icon: '⚡' },
+  { level: 3, name: 'محترف', xp: 600, icon: '🔥' },
+  { level: 4, name: 'نجم', xp: 1500, icon: '⭐' },
+  { level: 5, name: 'أسطورة', xp: 3200, icon: '👑' },
+  { level: 6, name: 'وسيم المنصة', xp: 6000, icon: '💎' },
+  { level: 7, name: 'شيخ NEXA', xp: 12000, icon: '🏆' },
+]
+export const initialXp = 1640
+export const initialStreak = 9
+
+export const WALLET = {
+  balance: 520, coins: 1240, gems: 8,
+  transactions: [
+    { id: 'w1', label: 'هدية ✈️ صاروخ إلى يوسف', amount: -50, time: 'الآن', kind: 'spend' },
+    { id: 'w2', label: 'مكافأة مشاهدة البثّ', amount: +24, time: 'قبل 1 س', kind: 'earn' },
+    { id: 'w3', label: 'دعم من عمر', amount: +150, time: 'قبل 3 س', kind: 'earn' },
+    { id: 'w4', label: 'شراء قهوة بَحّة', amount: -12, time: 'قبل 5 س', kind: 'spend' },
+    { id: 'w5', label: 'تحويل نجاح إلى محفظة', amount: +300, time: 'أمس', kind: 'earn' },
+  ],
+}
+
+// ---- CLIPS / SHORTS (vertical reels) -------------------------
+export const CLIPS = [
+  { id: 'c1', src: 'u2', title: 'أعظم تعليق على اللقطة الأخيرة 😂', views: 892000, likes: 64000, comments: 2100, length: '0:32', vivid: 1 },
+  { id: 'c2', src: 'u7', title: 'أجمل لحظة من جولة المالديف 🏝️', views: 410000, likes: 38000, comments: 900, length: '0:58', vivid: 2 },
+  { id: 'c3', src: 'u10', title: 'هدف خارق من الزاوية البعيدة 🎯', views: 1300000, likes: 210000, comments: 4800, length: '0:21', vivid: 3 },
+  { id: 'c4', src: 'u6', title: 'جلسة عزف على الجيتار — الجزء الأول 🎸', views: 220000, likes: 41000, comments: 700, length: '1:12', vivid: 4 },
+  { id: 'c5', src: 'u1', title: 'أفضل 3 هواتف لعام 2026 📱', views: 540000, likes: 27000, comments: 1500, length: '0:44', vivid: 0 },
+  { id: 'c6', src: 'u8', title: 'رسم فني مباشر بإطار زمني ⏱️', views: 130000, likes: 21000, comments: 300, length: '0:39', vivid: 5 },
+]
+
+// ---- TOURNAMENTS (live competitions) ---------------------------
+export const TOURNAMENTS = [
+  {
+    id: 't1', name: 'بطولة NEXA للرياضات الإلكترونية', game: 'قنوات', prize: 500000, players: 128, status: 'live', start: 'الآن',
+    region: 'الشرق الأوسط', streamId: 's3',
+    bracket: [
+      { id: 'b1', a: 'يوسف', b: 'كلوديا', aScore: 2, bScore: 0, winner: 'a' },
+      { id: 'b2', a: 'عبدالله', b: 'طارق', aScore: 1, bScore: 2, winner: 'b' },
+      { id: 'b3', a: 'سارة', b: 'ريان', aScore: 3, bScore: 2, winner: 'a' },
+      { id: 'b4', a: 'نور', b: 'هند', aScore: 0, bScore: 0, winner: null },
+    ],
+    topPlayers: [
+      { id: 'u2', name: 'يوسف', score: 98, streak: 12 },
+      { id: 'u10', name: 'كلوديا', score: 91, streak: 8 },
+      { id: 'u4', name: 'عبدالله', score: 87, streak: 6 },
+      { id: 'u6', name: 'طارق', score: 84, streak: 5 },
+    ],
+  },
+  {
+    id: 't2', name: 'تحدي صانعي المحتوى', game: 'إبداع', prize: 120000, players: 64, status: 'upcoming', start: 'غداً 8م',
+    region: 'عالمي',
+    bracket: [],
+    topPlayers: [
+      { id: 'u1', name: 'ليلى', score: 95, streak: 14 },
+      { id: 'u5', name: 'سارة', score: 90, streak: 9 },
+      { id: 'u7', name: 'هند', score: 88, streak: 7 },
+    ],
+  },
+]
+
+// ---- ANALYTICS (creator + brand) ------------------------------
+export const ANALYTICS = {
+  daily: [
+    { day: 'السبت', views: 1200, watch: 52000, subs: 40, revenue: 320 },
+    { day: 'الأحد', views: 1500, watch: 61000, subs: 52, revenue: 390 },
+    { day: 'الاثنين', views: 1100, watch: 48000, subs: 35, revenue: 290 },
+    { day: 'الثلاثاء', views: 1800, watch: 78000, subs: 64, revenue: 480 },
+    { day: 'الأربعاء', views: 1600, watch: 70000, subs: 58, revenue: 420 },
+    { day: 'الخميس', views: 2400, watch: 112000, subs: 92, revenue: 690 },
+    { day: 'الجمعة', views: 3100, watch: 145000, subs: 120, revenue: 860 },
+  ],
+  hours: { '12-2': 400, '2-4': 620, '4-6': 880, '6-8': 1300, '8-10': 1850, '10-12': 2100, '12-2am': 900 },
+  regions: [
+    { label: 'السعودية', value: 44, color: '#22c55e' },
+    { label: 'مصر', value: 22, color: '#22d3ee' },
+    { label: 'الإمارات', value: 16, color: '#8b5cf6' },
+    { label: 'العراق', value: 10, color: '#f59e0b' },
+    { label: 'أخرى', value: 8, color: '#ec4899' },
+  ],
+  retention: [
+    { label: 'أول 5 دقائق', value: 78 },
+    { label: '15 دقيقة', value: 62 },
+    { label: '30 دقيقة', value: 48 },
+    { label: '60 دقيقة', value: 34 },
+    { label: '90 دقيقة', value: 22 },
+  ],
+  funnel: [
+    { label: 'وصلوا للبثّ', v: 100 },
+    { label: 'شاهدوا +1 دقيقة', v: 74 },
+    { label: 'تفاعلوا', v: 51 },
+    { label: 'تابعوا', v: 33 },
+    { label: 'دعموا', v: 12 },
+  ],
+}
+
+// ---- SHOP (creator + digital goods) ----------------------------
+export const SHOP_ITEMS = [
+  { id: 'sh1', name: 'قهوة بَحّة لصانعك المفضل', price: 12, kind: 'رفع', emoji: '☕', color: '#a16207' },
+  { id: 'sh2', name: 'عطر "إشراقة" حصري', price: 45, kind: 'منتج', emoji: '🧴', color: '#db2777' },
+  { id: 'sh3', name: 'قسيمة نسخة بثّ مُوقّعة', price: 30, kind: 'رقمي', emoji: '✍️', color: '#2563eb' },
+  { id: 'sh4', name: 'شارة مساحات ذهبية', price: 25, kind: 'مستوى', emoji: '🥇', color: '#ca8a04' },
+  { id: 'sh5', name: 'لوحة مفاتيح RGB', price: 120, kind: 'منتج', emoji: '⌨️', color: '#7c3aed' },
+  { id: 'sh6', name: 'خطّة تجربة AI Pro', price: 99, kind: 'اشتراك', emoji: '🤖', color: '#0891b2' },
+]
+
+// ---- AI STUDIO ------------------------------------------------
+export const AI_STUDIO = {
+  templates: [
+    { id: 'a1', name: 'كتابة منشور جذّاب', prompt: 'أنشئ منشوراً يحفّز التفاعل عن [الموضوع]', icon: '✍️' },
+    { id: 'a2', name: 'اقتراح موضوع بثّ', prompt: 'اقترح 5 مواضيع بثّ مباشر رائجة عن [الموضوع]', icon: '📺' },
+    { id: 'a3', name: 'إيجاد أفضل مقطع (Clip)', prompt: 'حلّل بثّي واقترح أفضل اللقطات لتكون مقاطع', icon: '🎬' },
+    { id: 'a4', name: 'توليد ردود ذكية', prompt: 'اكتب ردوداً ودودة على تعليقات الجمهور', icon: '💬' },
+    { id: 'a5', name: 'مساعد بثّ تفاعلي', prompt: 'شغّل مساعد يعلّق ويتفاعل تلقائياً في البثّ', icon: '🛰️' },
+    { id: 'a6', name: 'عناوين إعلانية', prompt: 'ولّد 5 عناوين إعلانية لعلامة [المنتج]', icon: '📣' },
+  ],
+  // "generated" outputs used to simulate AI runtime
+  samples: {
+    'a1': '🚀 3 أشياء غيرت طريقة استهلاكي للمحتوى هذا العام…\n1️⃣ أداة العزل الصوتي\n2️⃣ مساحات NEXA\n3️⃣ شحن الطاقة مع المجتمع\nفما الشيء الذي غيّر تجربتك؟ شاركني بالتعليق 👇',
+    'a2': '1. "ألعب أفضل 10 ألعاب هذا الأسبوع"\n2. "جلسة أسئلة وأجوبة مفتوحة مع الجمهور"\n3. "أصنع محتوى من أفكار متابعي" \n4. "أكشف عن أدواتي الحقيقية في البثّ"\n5. "تحدّي 24 ساعة مع المجتمع"',
+    'a3': '🎬 اقتراحات أفضل المقاطع:\n• اللحظة 12:40 — تعليق الجمهور الأكثر تسلية\n• اللحظة 25:10 — هدف خارق\n• اللحظة 41:30 — ردّ مدهش من يوسف\nزرClip جاهز للنشر الآن.',
+    'a4': '💬 اقتراحات ردود ودودة:\n• "ما شاء الله! فخور بانضمامك للبثّ 🎉"\n• "سؤال رائع — سأناقشه في أول 5 دقائق"\n• "شكراً لكلماتك الداعمة، أنتم مجتمع مذهل 💜"',
+    'a5': '🛰️ مساعد البثّ يعمل الآن:\n• يتابع الدردشة ويعلّق تلقائياً\n• يلتقط الأسئلة المتكررة\n• يطابق الذكاء الاصطناعي اهتمامات الجمهور',
+    'a6': '📣 عناوين إعلانية مقترحة:\n1. "عِش هاتفك بسرعة جديدة — NX-9"\n2. "أكثر من مجرد هاتف، إنها تجربة"\n3. "لا تفوّت الليلة — عرض حصري لمشتركي NEXA"',
+  },
+}
+
+// ---- BADGES / ACHIEVEMENTS ------------------------------------
+export const BADGES = [
+  { id: 'g1', name: 'سيّد البثّ', icon: '📺', desc: 'شاهد 100 ساعة', done: true },
+  { id: 'g2', name: 'قلب المجتمع', icon: '💜', desc: 'ادعم 5 صانعين', done: true },
+  { id: 'g3', name: 'نجم المساحات', icon: '🎙️', desc: 'ادخل 20 مساحة', done: false },
+  { id: 'g4', name: 'مولّد محتوى AI', icon: '🤖', desc: 'ولّد 10 أفكار بالذكاء', done: true },
+  { id: 'g5', name: 'مُشغّل البطولات', icon: '🏆', desc: 'شارك في بطولة', done: false },
+  { id: 'g6', name: 'بطل المقتطف', icon: '🎬', desc: 'انشر 5 مقاطع', done: false },
+]
+
+// ---- MULTI-VIEW scene notes (derived from STREAMS) ------------
+export const MULTIVIEW_LAYOUTS = [
+  { id: '2x2', name: 'شبكة 2×2', cols: 2 },
+  { id: '3x1', name: 'ثلاث أفقية', cols: 3 },
+  { id: '4x1', name: 'أربع أفقية', cols: 4 },
+]

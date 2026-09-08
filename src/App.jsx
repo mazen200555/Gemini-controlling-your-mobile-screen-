@@ -6,6 +6,12 @@ import Spaces from './views/Spaces'
 import Creators from './views/Creators'
 import Ads from './views/Ads'
 import AI from './views/AI'
+import MultiView from './views/MultiView'
+import Shorts from './views/Shorts'
+import Analytics from './views/Analytics'
+import AIStudio from './views/AIStudio'
+import Tournaments from './views/Tournaments'
+import Economy from './views/Economy'
 import SearchOverlay from './components/SearchOverlay'
 import Notifications from './components/Notifications'
 import ProfileModal from './components/ProfileModal'
@@ -19,10 +25,18 @@ const NAV = [
   { key: 'live', label: 'البثّ المباشر' },
   { key: 'spaces', label: 'المساحات الصوتية' },
   { key: 'creators', label: 'دعم صانعي المحتوى' },
+]
+const NAV_POWER = [
+  { key: 'multiview', label: 'مشاهدة متعددة' },
+  { key: 'shorts', label: 'المقاطع القصيرة' },
+  { key: 'tournaments', label: 'البطولات الحيّة' },
+  { key: 'analytics', label: 'التحليلات الشاملة' },
+  { key: 'aistudio', label: 'استوديو الذكاء' },
   { key: 'ads', label: 'إعلانات الشركات' },
+  { key: 'economy', label: 'النقاط والمتجر' },
   { key: 'ai', label: 'الذكاء الاصطناعي' },
 ]
-const NAV_ICON = { home: 'home', live: 'live', spaces: 'spaces', creators: 'creators', ads: 'ads', ai: 'ai' }
+const NAV_ICON = { home: 'home', live: 'live', spaces: 'spaces', creators: 'creators', ads: 'ads', ai: 'ai', multiview: 'list', shorts: 'play', tournaments: 'flame', analytics: 'chart', aistudio: 'ai', economy: 'coins' }
 
 function RightRail({ nav }) {
   const trends = AI_INSIGHTS.hotTopics.slice(0, 4)
@@ -95,7 +109,7 @@ function LiveActiveBar({ nav }) {
 }
 
 function Shell() {
-  const { page, nav, search, setSearch, setShowSearch, showSearch, setShowNotifs, showNotifs, unread, setGoLiveOpen, toast, openProfile } = useApp()
+  const { page, nav, search, setSearch, setShowSearch, showSearch, setShowNotifs, showNotifs, unread, setGoLiveOpen, toast, openProfile, xp, streak, levelData } = useApp()
   const [q, setQ] = useState('')
 
   const views = {
@@ -105,6 +119,12 @@ function Shell() {
     creators: <Creators />,
     ads: <Ads />,
     ai: <AI />,
+    multiview: <MultiView />,
+    shorts: <Shorts />,
+    tournaments: <Tournaments />,
+    analytics: <Analytics />,
+    aistudio: <AIStudio />,
+    economy: <Economy />,
   }
 
   const me = userById('you')
@@ -131,6 +151,13 @@ function Shell() {
                 {n.label}
               </button>
             ))}
+            <div className="nav-gap-label">أدوات قوية</div>
+            {NAV_POWER.map(n => (
+              <button key={n.key} className={`nav-item ${page === n.key ? 'active' : ''}`} onClick={() => nav(n.key)}>
+                <span className="nav-icon"><Icon name={NAV_ICON[n.key]} size={19} /></span>
+                {n.label}
+              </button>
+            ))}
           </nav>
           <button className="nav-action" onClick={() => setGoLiveOpen(true)}><Icon name="plus" size={18} /> ابدأ البثّ</button>
           <div className="sidebar-me" onClick={() => openProfile('you')} style={{ cursor: 'pointer' }}>
@@ -151,11 +178,14 @@ function Shell() {
               <SearchOverlay />
             </div>
             <div className="topbar-right">
-              <button className="icon-btn" onClick={() => nav('ai')} title="الذكاء الاصطناعي"><Icon name="ai" size={20} /></button>
+              <button className="xp-badge" onClick={() => nav('economy')} title="المستوى والنقاط">
+                <Icon name="flame" size={15} /> {streak}<span className="xp-sep">·</span>{levelData.icon} {levelData.level}
+              </button>
+              <button className="icon-btn" onClick={() => nav('aistudio')} title="استوديو الذكاء"><Icon name="ai" size={20} /></button>
+              <button className="icon-btn" title="التحليلات"><Icon name="chart" size={20} /></button>
               <button className="icon-btn" title="إشعارات" onClick={() => setShowNotifs(!showNotifs)}>
                 <Icon name="bell" size={20} />{unread > 0 && <span className="dot" />}
               </button>
-              <button className="icon-btn" title="رسائل"><Icon name="mail" size={20} /></button>
             </div>
             <Notifications />
           </div>
@@ -168,7 +198,7 @@ function Shell() {
       <LiveActiveBar nav={nav} />
 
       <nav className="mobile-nav">
-        {NAV.slice(0, 5).map(n => (
+        {[...NAV, ...NAV_POWER].filter(n => !['ai', 'ads', 'economy', 'aistudio'].includes(n.key)).map(n => (
           <button key={n.key} className={`mnav-item ${page === n.key ? 'active' : ''}`} onClick={() => nav(n.key)}>
             <span className="ic"><Icon name={NAV_ICON[n.key]} size={20} /></span>
             {n.label.split(' ')[0]}

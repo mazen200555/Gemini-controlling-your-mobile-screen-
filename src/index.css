@@ -575,3 +575,43 @@ img { display: block; max-width: 100%; }
 }
 .stream-opt:hover { border-color: var(--border-strong); background: rgba(255,255,255,.05); }
 .stream-opt.active { border-color: var(--violet); background: rgba(139,92,246,.12); }
+
+/* ---------- Sidebar power section label ---------- */
+.nav-gap-label {
+  font-size: 10px; font-weight: 800; color: var(--muted-2);
+  letter-spacing: .4px; padding: 14px 14px 6px; text-transform: uppercase;
+}
+.nav-item .nav-icon { font-size: 16px; }
+
+/* ---------- XP badge in topbar ---------- */
+.xp-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 999px; padding: 7px 13px; font-size: 13px; font-weight: 800;
+  color: var(--text); cursor: pointer; transition: all .2s;
+}
+.xp-badge:hover { border-color: var(--border-strong); background: rgba(255,255,255,.06); }
+.xp-sep { color: var(--muted-2); }
+
+/* ---------- Shorts / reels ---------- */
+.reels-stage {
+  position: relative; height: 360px; display: grid; place-items: center;
+  cursor: pointer; overflow: hidden;
+}
+.reels-emoji { font-size: 78px; filter: drop-shadow(0 10px 30px rgba(0,0,0,.5)); }
+.reels-title { position: absolute; bottom: 70px; left: 14px; right: 14px; font-weight: 900; font-size: 16px; text-shadow: 0 2px 12px rgba(0,0,0,.7); }
+.reels-length { position: absolute; top: 14px; left: 14px; background: rgba(0,0,0,.55); padding: 4px 9px; border-radius: 999px; font-size: 11px; }
+.reels-num { position: absolute; top: 14px; right: 14px; background: rgba(0,0,0,.55); padding: 4px 9px; border-radius: 999px; font-size: 11px; }
+.reels-slides { position: absolute; top: 0; left: 0; height: 3px; }
+.reels-controls { display: flex; gap: 10px; align-items: center; padding: 14px; background: rgba(0,0,0,.3); }
+
+/* ---------- AI output ---------- */
+.ai-output {
+  white-space: pre-wrap; font-family: var(--font); font-size: 14px; line-height: 1.8;
+  background: rgba(255,255,255,.04); border: 1px solid var(--border);
+  border-radius: 14px; padding: 16px; margin: 0; color: var(--text);
+  flex: 1; min-height: 160px;
+}
+
+/* ---------- Analytics tweaks ---------- */
+.metric-grid .stat-value { letter-spacing: -1px; }

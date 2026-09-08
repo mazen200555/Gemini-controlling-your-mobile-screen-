@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useCallback } from 'react'
-import { NOTIFICATIONS as NOTIF_SEED, STREAMS, SPACES, USERS, FEED, userById } from './data'
+import { NOTIFICATIONS as NOTIF_SEED, STREAMS, SPACES, USERS, FEED, userById, XP_LEVELS, initialXp, initialStreak, WALLET } from './data'
 
 const Ctx = createContext(null)
 
@@ -18,6 +18,9 @@ export function AppProvider({ children }) {
   const [toast, setToast] = useState(null)
   const [followed, setFollowed] = useState({})              // userId -> bool
   const [goLiveOpen, setGoLiveOpen] = useState(false)
+  const [xp, setXp] = useState(initialXp)
+  const [streak, setStreak] = useState(initialStreak)
+  const [wallet, setWallet] = useState(WALLET.balance)
 
   const notify = useCallback((m) => {
     setToast(m)
@@ -62,6 +65,42 @@ export function AppProvider({ children }) {
 
   const unread = notifs.filter(n => n.unread).length
 
+  // ---- gamification: XP / level / streak / wallet ----
+  const addXp = useCallback((amount, reason = 'تفاعل') => {
+    setXp(p => {
+      const next = p + amount
+      const before = XP_LEVELS.filter(l => l.xp <= p).length
+      const after = XP_LEVELS.filter(l => l.xp <= next).length
+      if (after > before) {
+        const lvl = XP_LEVELS[after - 1]
+        setTimeout(() => notify(`🎉 ترقّيت إلى المستوى ${lvl.level} — ${lvl.name} ${lvl.icon}`), 10)
+      } else {
+        setTimeout(() => notify(`+${amount} XP — ${reason} ⚡`), 10)
+      }
+      return next
+    })
+  }, [notify])
+
+  const addToWallet = useCallback((amount) => {
+    setWallet(b => {
+      const next = b + amount
+      setTimeout(() => notify(amount > 0 ? `💜 حصلت على $${amount}` : `💸 أنفقت $${Math.abs(amount)}`), 10)
+      return next
+    })
+  }, [notify])
+
+  const spendFromWallet = useCallback((amount) => {
+    setWallet(b => {
+      const next = Math.max(0, b - amount)
+      setTimeout(() => notify(`💸 أنفقت $${amount}`), 10)
+      return next
+    })
+  }, [notify])
+
+  const levelData = XP_LEVELS.filter(l => l.xp <= xp).pop() || XP_LEVELS[0]
+  const nextLevel = XP_LEVELS[XP_LEVELS.indexOf(levelData) + 1] || null
+  const levelProgress = nextLevel ? Math.round(((xp - levelData.xp) / (nextLevel.xp - levelData.xp)) * 100) : 100
+
   const searchIndex = (q) => {
     if (!q.trim()) return { users: [], streams: [], spaces: [], posts: [], brands: [] }
     const t = q.trim().toLowerCase()
@@ -84,6 +123,8 @@ export function AppProvider({ children }) {
       toast, notify,
       followed, toggleFollow,
       goLiveOpen, setGoLiveOpen,
+      xp, streak, levelData, nextLevel, levelProgress, addXp,
+      wallet, addToWallet, spendFromWallet,
     }}>
       {children}
     </Ctx.Provider>

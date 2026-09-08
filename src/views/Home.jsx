@@ -4,7 +4,7 @@ import { Icon, Avatar, fmtNum, Toast } from '../components/ui'
 import { useApp } from '../context'
 
 export default function Home() {
-  const { nav, openProfile } = useApp()
+  const { nav, openProfile, addXp } = useApp()
   const [posts, setPosts] = useState(FEED)
   const [text, setText] = useState('')
   const [toast, setToast] = useState(null)
@@ -20,9 +20,13 @@ export default function Home() {
     setPosts([newPost, ...posts])
     setText('')
     notify('تم نشر منشورك 💫')
+    addXp(15, 'نشر منشور')
   }
 
-  const like = (id) => setPosts(p => p.map(x => x.id === id ? { ...x, liked: !x.liked, likes: x.likes + (x.liked ? -1 : 1) } : x))
+  const like = (id) => {
+    setPosts(p => p.map(x => x.id === id ? { ...x, liked: !x.liked, likes: x.likes + (x.liked ? -1 : 1) } : x))
+    addXp(5, 'إعجاب')
+  }
 
   const Media = ({ post }) => {
     if (!post.media) return null
