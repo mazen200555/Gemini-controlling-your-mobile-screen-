@@ -1,10 +1,10 @@
 import { useState } from 'react'
-import { WALLET, SHOP_ITEMS, BADGES, XP_LEVELS, initialXp } from '../data'
+import { WALLET, SHOP_ITEMS, BADGES } from '../data'
 import { Icon, fmtNum, Progress, Toast } from '../components/ui'
 import { useApp } from '../context'
 
 export default function Economy() {
-  const { xp, streak, levelData, levelProgress, nextLevel, wallet, spendFromWallet, addXp, notify } = useApp()
+  const { xp, streak, levelData, levelProgress, nextLevel, wallet, spendFromWallet, addXp, notify, nav, balances } = useApp()
   const [owned, setOwned] = useState({})
   const [toast, setToast] = useState(null)
 
@@ -63,6 +63,9 @@ export default function Economy() {
             <button className="btn sm ghost" onClick={() => { addXp(50, 'إيداع'); notify('أضفت $100 إلى رصيدك 🎉') }}>+ إيداع</button>
             <button className="btn sm ghost" style={{ marginRight: 10 }} onClick={() => { notify('فُتح معرض الجواهر 💎') }}>الجواهر</button>
           </div>
+          <button className="btn primary block mt-1" onClick={() => nav('currency')} style={{ background: 'linear-gradient(135deg,#22d3ee,#8b5cf6)' }}>
+            <Icon name="money" size={16} /> المحفظة القابلة للتحويل — USD {balances?.USD} USDT {balances?.USDT}
+          </button>
           <div style={{ marginTop: 16 }}>
             <div className="muted" style={{ fontWeight: 700, fontSize: 13, marginBottom: 8 }}>آخر الحركات</div>
             {WALLET.transactions.map(w => (

@@ -416,3 +416,34 @@ export const MULTIVIEW_LAYOUTS = [
   { id: '3x1', name: 'ثلاث أفقية', cols: 3 },
   { id: '4x1', name: 'أربع أفقية', cols: 4 },
 ]
+
+// ---- CONVERTIBLE REAL CURRENCY ----------------------------------
+export const CURRENCIES = [
+  { code: 'USD', name: 'دولار أمريكي', symbol: '$', flag: '🇺🇸', rate: 1 },
+  { code: 'SAR', name: 'ريال سعودي', symbol: 'ر.س', flag: '🇸🇦', rate: 3.75 },
+  { code: 'USDT', name: 'تيثّر (USDT)', symbol: '₮', flag: '🪙', rate: 1 },
+  { code: 'EUR', name: 'يورو', symbol: '€', flag: '🇪🇺', rate: 0.92 },
+  { code: 'AED', name: 'درهم إماراتي', symbol: 'د.إ', flag: '🇦🇪', rate: 3.67 },
+]
+
+// live-ish price ticks (offsets in % applied to base rate)
+export const EXCHANGE_TICKS = [
+  { code: 'USD', change: +0.12 },
+  { code: 'SAR', change: -0.04 },
+  { code: 'USDT', change: +0.03 },
+  { code: 'EUR', change: -0.21 },
+  { code: 'AED', change: +0.08 },
+]
+
+export const WITHDRAW_METHODS = [
+  { id: 'w1', name: 'تحويل بنكي (IBAN)', icon: '🏦', fee: 1.5, time: '1-3 أيام', limit: 5000 },
+  { id: 'w2', name: 'محفظة USDT / تيثّر', icon: '🪙', fee: 0.5, time: 'فوري', limit: 10000 },
+  { id: 'w3', name: 'PayPal', icon: '💳', fee: 2.5, time: '1 يوم', limit: 3000 },
+  { id: 'w4', name: 'تحويل محلي (STC Pay)', icon: '📱', fee: 0, time: 'فوري', limit: 8000 },
+]
+
+export const CONVERSION_HISTORY = [
+  { id: 'cv1', from: 'USDT', fromAmt: 120, to: 'USD', toAmt: 120, rate: 1, time: 'قبل يومين' },
+  { id: 'cv2', from: 'USD', fromAmt: 200, to: 'SAR', toAmt: 750, rate: 3.75, time: 'قبل 4 أيام' },
+  { id: 'cv3', from: 'SAR', fromAmt: 90, to: 'AED', toAmt: 88.1, rate: 3.67, time: 'قبل أسبوع' },
+]

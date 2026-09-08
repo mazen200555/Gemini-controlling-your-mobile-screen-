@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { STREAMS, CHAT_SEED, CHAT_POOL, userById, hash } from '../data'
 import { Icon, Avatar, fmtNum, Toast } from '../components/ui'
+import VideoPlayer from '../components/VideoPlayer'
 import { useApp } from '../context'
 
 const EMOJI = ['🔥', '❤️', '🎉', '👏', '😂', '💜', '🚀', '🤯', '🎊', '🕺']
@@ -80,44 +81,15 @@ export default function Live() {
       <div className="grid-2" style={{ gridTemplateColumns: '2.2fr 1fr' }}>
         {/* Player */}
         <div className="player-wrap">
-          <div className="player-stage">
-            <div className="glow" style={{ background: `radial-gradient(circle at 50% 40%, hsl(${c % 360},80%,45%), transparent 70%)` }} />
-            <div className="stage-content" style={{ flexDirection: 'column', gap: 10 }}>
-              <div style={{ fontSize: 48 }}>🎮</div>
-              <div style={{ textAlign: 'center', padding: '0 30px' }}>
-                <div style={{ fontWeight: 900, fontSize: 18 }}>{stream.title}</div>
-                <div className="muted" style={{ marginTop: 6, fontSize: 13 }}>{stream.description}</div>
-              </div>
-            </div>
-          </div>
+          <VideoPlayer stream={stream} host={host} />
           <div className="gift-bar">
             <span className="pill violet"><Icon name="target" size={13} /> إعلان مدمج — TechGulf NX-9</span>
-          </div>
-          <div className="live-now">
-            <span className="pill live"><span className="pulse" /> LIVE</span>
-            <span className="pill soft">{stream.quality}</span>
           </div>
           {floats.map(f => (
             <div key={f.id} className="float-msg" style={{ left: `${f.x}%`, fontSize: 30 + (pulse % 10) }}>
               {f.emoji}
             </div>
           ))}
-          <div className="player-controls">
-            <button className="control" onClick={() => setMuted(!muted)}>{muted ? '🔇' : '🔊'}</button>
-            <button className="control">📺</button>
-            <button className="control">⚙️</button>
-            <button className="control main" onClick={react}>❤️</button>
-            <div className="player-meta" style={{ marginRight: 'auto' }}>
-              <Avatar user={host} size="sm" speaking />
-              <div>
-                <div style={{ fontWeight: 800, fontSize: 13 }}>{host.name}</div>
-                <div className="muted" style={{ fontSize: 11 }}>{fmtNum(host.followers)} متابع</div>
-              </div>
-              <button className="btn sm" style={{ background: isFollowing ? 'rgba(255,255,255,.1)' : 'var(--grad)', color: '#fff' }} onClick={() => toggleFollow(host.id)}>
-                {isFollowing ? 'متابع ✓' : 'متابعة'}
-              </button>
-            </div>
-          </div>
         </div>
 
         {/* Chat */}

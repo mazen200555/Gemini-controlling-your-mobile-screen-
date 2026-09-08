@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useCallback } from 'react'
-import { NOTIFICATIONS as NOTIF_SEED, STREAMS, SPACES, USERS, FEED, userById, XP_LEVELS, initialXp, initialStreak, WALLET } from './data'
+import { NOTIFICATIONS as NOTIF_SEED, STREAMS, SPACES, USERS, FEED, userById, XP_LEVELS, initialXp, initialStreak, WALLET, CURRENCIES, EXCHANGE_TICKS, WITHDRAW_METHODS, CONVERSION_HISTORY } from './data'
 
 const Ctx = createContext(null)
 
@@ -21,6 +21,9 @@ export function AppProvider({ children }) {
   const [xp, setXp] = useState(initialXp)
   const [streak, setStreak] = useState(initialStreak)
   const [wallet, setWallet] = useState(WALLET.balance)
+  const [balances, setBalances] = useState({ USD: 1250, SAR: 2400, USDT: 160, EUR: 90, AED: 140 })
+  const [conversionHistory, setConversionHistory] = useState(CONVERSION_HISTORY)
+  const [withdrawHistory, setWithdrawHistory] = useState([])
 
   const notify = useCallback((m) => {
     setToast(m)
@@ -101,6 +104,38 @@ export function AppProvider({ children }) {
   const nextLevel = XP_LEVELS[XP_LEVELS.indexOf(levelData) + 1] || null
   const levelProgress = nextLevel ? Math.round(((xp - levelData.xp) / (nextLevel.xp - levelData.xp)) * 100) : 100
 
+  // ---- real convertible currency ----
+  const rateOf = (code) => (CURRENCIES.find(c => c.code === code) || { rate: 1 }).rate
+  const priceTick = (code) => (EXCHANGE_TICKS.find(t => t.code === code) || { change: 0 }).change
+
+  const convert = useCallback((amount, from, to) => {
+    if (amount <= 0) { notify('⚠️ أدخل مبلغاً صالحاً'); return false }
+    if (from === to) { notify('⚠️ اختر عملتين مختلفتين'); return false }
+    if (balances[from] === undefined || balances[from] < amount) { notify('❌ رصيدك في هذه العملة غير كافٍ'); return false }
+    const rf = rateOf(from), rt = rateOf(to)
+    const got = +(amount / rf * rt).toFixed(2)
+    setBalances(b => ({ ...b, [from]: +(b[from] - amount).toFixed(2), [to]: +(b[to] + got).toFixed(2) }))
+    const cx = { id: 'cv' + Date.now(), from, fromAmt: amount, to, toAmt: got, rate: +((rt / rf)).toFixed(4), time: 'الآن' }
+    setConversionHistory(h => [cx, ...h])
+    addXp(20, 'تبديل عملة')
+    notify(`💱 حوّلت ${amount} ${from} ← ${got} ${to}`)
+    return true
+  }, [balances, notify, addXp])
+
+  const withdraw = useCallback((methodId, amount, currency = 'USDT') => {
+    const method = WITHDRAW_METHODS.find(m => m.id === methodId)
+    if (!method) return false
+    if (amount <= 0) { notify('⚠️ أدخل مبلغاً صالحاً'); return false }
+    if ((balances[currency] || 0) < amount) { notify('❌ الرصيد غير كافٍ'); return false }
+    const fee = +(amount * method.fee / 100).toFixed(2)
+    const net = +(amount - fee).toFixed(2)
+    setBalances(b => ({ ...b, [currency]: +(b[currency] - amount).toFixed(2) }))
+    setWithdrawHistory(h => [{ id: 'wd' + Date.now(), method, amount, fee, net, currency, time: 'الآن' }, ...h])
+    notify(`🏦 سحب ${net} ${currency} عبر ${method.name}`)
+    addXp(30, 'سحب من المحفظة')
+    return true
+  }, [balances, notify, addXp])
+
   const searchIndex = (q) => {
     if (!q.trim()) return { users: [], streams: [], spaces: [], posts: [], brands: [] }
     const t = q.trim().toLowerCase()
@@ -125,6 +160,8 @@ export function AppProvider({ children }) {
       goLiveOpen, setGoLiveOpen,
       xp, streak, levelData, nextLevel, levelProgress, addXp,
       wallet, addToWallet, spendFromWallet,
+      balances, convert, withdraw, rateOf, priceTick,
+      conversionHistory, withdrawHistory,
     }}>
       {children}
     </Ctx.Provider>

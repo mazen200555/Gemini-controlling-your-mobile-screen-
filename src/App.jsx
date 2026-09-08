@@ -12,6 +12,7 @@ import Analytics from './views/Analytics'
 import AIStudio from './views/AIStudio'
 import Tournaments from './views/Tournaments'
 import Economy from './views/Economy'
+import Currency from './views/Currency'
 import SearchOverlay from './components/SearchOverlay'
 import Notifications from './components/Notifications'
 import ProfileModal from './components/ProfileModal'
@@ -34,9 +35,10 @@ const NAV_POWER = [
   { key: 'aistudio', label: 'استوديو الذكاء' },
   { key: 'ads', label: 'إعلانات الشركات' },
   { key: 'economy', label: 'النقاط والمتجر' },
+  { key: 'currency', label: 'العملات والمحفظة' },
   { key: 'ai', label: 'الذكاء الاصطناعي' },
 ]
-const NAV_ICON = { home: 'home', live: 'live', spaces: 'spaces', creators: 'creators', ads: 'ads', ai: 'ai', multiview: 'list', shorts: 'play', tournaments: 'flame', analytics: 'chart', aistudio: 'ai', economy: 'coins' }
+const NAV_ICON = { home: 'home', live: 'live', spaces: 'spaces', creators: 'creators', ads: 'ads', ai: 'ai', multiview: 'list', shorts: 'play', tournaments: 'flame', analytics: 'chart', aistudio: 'ai', economy: 'coins', currency: 'money' }
 
 function RightRail({ nav }) {
   const trends = AI_INSIGHTS.hotTopics.slice(0, 4)
@@ -125,6 +127,7 @@ function Shell() {
     analytics: <Analytics />,
     aistudio: <AIStudio />,
     economy: <Economy />,
+    currency: <Currency />,
   }
 
   const me = userById('you')
