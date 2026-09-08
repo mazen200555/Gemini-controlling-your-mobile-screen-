@@ -3,6 +3,8 @@ import { useApp } from '../context'
 import { Icon, Modal } from './ui'
 import { SETTING_GROUPS, THEMES, ACCENTS } from '../settings'
 
+const MODE_LABELS = { manual: 'يدوي', auto: 'تلقائي', scheduled: 'جدول' }
+
 const LABELS = {
   sm: 'صغير', md: 'وسط', lg: 'كبير', xl: 'ضخم',
   compact: 'مدمج', comfort: 'مريح', spacious: 'واسع',
@@ -50,7 +52,7 @@ function AccentPicker({ value, onChange }) {
   )
 }
 
-function Field({ field, value, onChange }) {
+function Field({ field, value, onChange, extra }) {
   switch (field.type) {
     case 'switch':
       return (
@@ -61,6 +63,24 @@ function Field({ field, value, onChange }) {
     case 'segmented': return <Segmented options={field.options} value={value} onChange={onChange} />
     case 'theme': return <ThemePicker value={value} onChange={onChange} />
     case 'accent': return <AccentPicker value={value} onChange={onChange} />
+    case 'schedule':
+      return (
+        <input
+          className="set-input"
+          value={value || ''}
+          onChange={e => onChange(e.target.value)}
+          placeholder="21:00-07:00"
+          dir="ltr"
+        />
+      )
+    case 'code':
+      return (
+        <div className="set-code-row">
+          <input className="set-input" readOnly value={value} dir="ltr" placeholder="—" />
+          <button className="btn sm ghost" onClick={extra?.gen}>توليد</button>
+          <button className="btn sm primary" onClick={extra?.copy}>نسخ</button>
+        </div>
+      )
     case 'density':
       return (
         <Segmented options={['compact', 'comfort', 'spacious']} value={value} onChange={onChange} />
@@ -70,7 +90,7 @@ function Field({ field, value, onChange }) {
 }
 
 export default function SettingsPanel() {
-  const { settingsOpen, setSettingsOpen, settings, setSetting, resetSettings, notify } = useApp()
+  const { settingsOpen, setSettingsOpen, settings, setSetting, resetSettings, notify, effectiveTheme, genBackupCode, copyBackupCode } = useApp()
   const [group, setGroup] = useState('appearance')
   if (!settingsOpen) return null
 
@@ -79,6 +99,11 @@ export default function SettingsPanel() {
   const change = (key, value) => {
     setSetting(key, value)
     notify('📦 تم تحديث الإعدادات وحُفظت تلقائياً')
+  }
+
+  const codeExtra = {
+    gen: async () => { const c = await genBackupCode(); notify(`🔑 رمز جديد: ${c}`) },
+    copy: async () => { const c = await copyBackupCode(); notify(`🌟 نُسخ رمزك: ${c}`) },
   }
 
   return (
@@ -104,6 +129,14 @@ export default function SettingsPanel() {
           </div>
           <p className="muted" style={{ marginBottom: 14, fontSize: 13 }}>خصّص تجربتك لتكون مريحة لأطول جلسات. تُحفظ تلقائياً على جهازك.</p>
 
+          {group === 'appearance' && (
+            <div className="set-status">
+              <span className="pill violet">الوضع الحالي: {THEMES[effectiveTheme]?.label}</span>
+              <span className="pill soft">النمط: {MODE_LABELS[settings.themeMode] || 'يدوي'}</span>
+              {settings.themeMode !== 'manual' && <span className="pill cyan">يتبدّل تلقائياً حسب الوقت</span>}
+            </div>
+          )}
+
           {currentGroup.fields.map(f => {
             const val = settings[f.key]
             return (
@@ -112,7 +145,7 @@ export default function SettingsPanel() {
                   <div style={{ fontWeight: 700 }}>{f.label}</div>
                   {f.hint && <div className="muted" style={{ fontSize: 12, marginTop: 2 }}>{f.hint}</div>}
                 </div>
-                <Field field={f} value={val} onChange={(v) => change(f.key, v)} />
+                <Field field={f} value={val} onChange={(v) => change(f.key, v)} extra={f.key === 'backupCode' ? codeExtra : undefined} />
               </div>
             )
           })}

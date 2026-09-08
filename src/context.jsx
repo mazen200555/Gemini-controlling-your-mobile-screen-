@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useCallback, useEffect, useRef } from 'react'
 import { NOTIFICATIONS as NOTIF_SEED, STREAMS, SPACES, USERS, FEED, userById, XP_LEVELS, initialXp, initialStreak, WALLET, CURRENCIES, EXCHANGE_TICKS, WITHDRAW_METHODS, CONVERSION_HISTORY } from './data'
-import { loadSettings, saveSettings, applySettings, DEFAULT_SETTINGS } from './settings'
+import { loadSettings, saveSettings, applySettings, DEFAULT_SETTINGS, resolveTheme, THEMES } from './settings'
 
 const Ctx = createContext(null)
 
@@ -51,6 +51,24 @@ export function AppProvider({ children }) {
 
   // apply once on mount
   useEffect(() => { applySettings(settings) }, [])
+
+  // re-apply when settings change; for auto/scheduled also listen to the clock
+  useEffect(() => { applySettings(settings) }, [settings])
+
+  useEffect(() => {
+    if (settings.themeMode === 'manual') return
+    const tick = () => { applySettings(settingsRef.current) }
+    const id = setInterval(tick, 60000)
+    const d = new Date()
+    // also nudge on schedule boundaries by one-minute checks
+    return () => clearInterval(id)
+  }, [settings.themeMode])
+
+  // backup code generator
+  const genCode = useCallback(() => {
+    const r = Math.random().toString(36).slice(2, 6).toUpperCase() + Math.random().toString(36).slice(2, 6).toUpperCase()
+    return `NEXA-${r}`
+  }, [])
 
   const notify = useCallback((m) => {
     setToast(m)
@@ -180,6 +198,22 @@ export function AppProvider({ children }) {
     return true
   }, [balances, notify, addXp])
 
+  // live effective theme + helpers for the panel
+  const effectiveTheme = resolveTheme(settingsRef.current, new Date())
+  const isNight = !!((settings.themeMode !== 'manual') && effectiveTheme !== 'light')
+
+  const genBackupCode = useCallback(() => {
+    const code = 'NEXA-' + Array.from({ length: 8 }, () => 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[Math.floor(Math.random() * 32)]).join('')
+    setSetting('backupCode', code)
+    return code
+  }, [setSetting])
+
+  const copyBackupCode = useCallback(async () => {
+    const code = settingsRef.current.backupCode || genBackupCode()
+    try { await navigator.clipboard?.writeText(code) } catch (e) { /* ignore */ }
+    return code
+  }, [genBackupCode])
+
   const searchIndex = (q) => {
     if (!q.trim()) return { users: [], streams: [], spaces: [], posts: [], brands: [] }
     const t = q.trim().toLowerCase()
@@ -207,6 +241,7 @@ export function AppProvider({ children }) {
       balances, convert, withdraw, rateOf, priceTick,
       conversionHistory, withdrawHistory,
       settings, setSetting, resetSettings, settingsOpen, setSettingsOpen,
+      effectiveTheme, isNight, genBackupCode, copyBackupCode,
     }}>
       {children}
     </Ctx.Provider>

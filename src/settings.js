@@ -55,6 +55,10 @@ export const ACCENTS = [
 export const DEFAULT_SETTINGS = {
   // appearance
   theme: 'dark',
+  themeMode: 'manual',          // manual | auto | scheduled
+  themeSchedule: '#21:00-#07:00', // for scheduled: start-end 24h
+  autoDark: 'midnight',         // which dark theme auto mode switches to at night
+  autoLight: 'light',           // which light theme auto mode switches to by day
   accent: 'violet',
   density: 'comfort',          // compact | comfort | spacious
   textSize: 'md',              // sm | md | lg | xl
@@ -92,6 +96,10 @@ export const DEFAULT_SETTINGS = {
   showOnlineStatus: true,
   dataSaver: false,
   clearCache: false,
+
+  // account sync / backup
+  syncSettings: true,
+  backupCode: '',               // opaque code to identify local account backup
 }
 
 // ---- persistence ----
@@ -112,9 +120,34 @@ export function saveSettings(s) {
   try { localStorage.setItem(KEY, JSON.stringify(s)) } catch (e) { /* ignore */ }
 }
 
+// ---- resolve effective theme (whatever the user picks in auto/scheduled) ----
+function isNightAt(now) {
+  const h = now.getHours()
+  return h >= 19 || h < 6
+}
+
+export function resolveTheme(s, now = new Date()) {
+  if (s.themeMode === 'auto') {
+    return isNightAt(now) ? (s.autoDark || 'midnight') : (s.autoLight || 'light')
+  }
+  if (s.themeMode === 'scheduled') {
+    // parse "#21:00-#07:00"
+    const m = String(s.themeSchedule || '').match(/(\d{1,2}):(\d{2})\s*-\s*(\d{1,2}):(\d{2})/)
+    if (m) {
+      const start = (+m[1]) * 60 + (+m[2])
+      const end = (+m[3]) * 60 + (+m[4])
+      const cur = now.getHours() * 60 + now.getMinutes()
+      const night = start <= end ? (cur >= start && cur < end) : (cur >= start || cur < end)
+      return night ? (s.autoDark || 'midnight') : (s.autoLight || 'light')
+    }
+  }
+  return s.theme || 'dark'
+}
+
 // ---- apply settings to the live document ----
-export function applySettings(s) {
-  const theme = THEMES[s.theme] || THEMES.dark
+export function applySettings(s, now = new Date()) {
+  const eff = resolveTheme(s, now)
+  const theme = THEMES[eff] || THEMES[s.theme] || THEMES.dark
   const root = document.documentElement
   const body = document.body
 
@@ -126,8 +159,8 @@ export function applySettings(s) {
   root.style.setProperty('--violet', acc.violet)
   root.style.setProperty('--pink', acc.pink)
   root.style.setProperty('--grad', `linear-gradient(135deg, ${acc.violet} 0%, ${acc.pink} 100%)`)
-  root.style.setProperty('--grad-cool', `linear-gradient(135deg, ${s.theme === 'light' ? '#0ea5e9' : '#22d3ee'} 0%, ${acc.violet} 100%)`)
-  root.style.setProperty('--grad-warm', `linear-gradient(135deg, ${s.theme === 'light' ? '#f59e0b' : '#f59e0b'} 0%, #ef4444 100%)`)
+  root.style.setProperty('--grad-cool', `linear-gradient(135deg, ${eff === 'light' ? '#0ea5e9' : '#22d3ee'} 0%, ${acc.violet} 100%)`)
+  root.style.setProperty('--grad-warm', `linear-gradient(135deg, ${eff === 'light' ? '#f59e0b' : '#f59e0b'} 0%, #ef4444 100%)`)
 
   // roundness
   const round = { sm: '10px', md: '18px', lg: '26px' }[s.roundness] || '18px'
@@ -138,9 +171,9 @@ export function applySettings(s) {
   const fs = { sm: '14px', md: '16px', lg: '18px', xl: '20px' }[s.textSize] || '16px'
   root.style.fontSize = fs
 
-  // global classes
+  // global classes (based on the *resolved* theme)
   body.classList.remove('theme-light', 'theme-midnight', 'theme-amber')
-  body.classList.add(s.theme === 'light' ? 'theme-light' : s.theme === 'midnight' ? 'theme-midnight' : s.theme === 'amber' ? 'theme-amber' : '')
+  body.classList.add(eff === 'light' ? 'theme-light' : eff === 'midnight' ? 'theme-midnight' : eff === 'amber' ? 'theme-amber' : '')
   body.classList.toggle('density-compact', s.density === 'compact')
   body.classList.toggle('density-spacious', s.density === 'spacious')
   body.classList.toggle('reduce-motion', !!s.reduceMotion)
@@ -168,6 +201,10 @@ export const SETTING_GROUPS = [
     id: 'appearance', title: 'المظهر', icon: '🎨',
     fields: [
       { key: 'theme', type: 'theme', label: 'سمة اللون', hint: 'غيّر المزاج العام والتباين' },
+      { key: 'themeMode', type: 'segmented', label: 'وضع السمة', options: ['manual', 'auto', 'scheduled'], hint: 'يدوي، تلقائي حسب الوقت، أو بجدول مخصّص' },
+      { key: 'themeSchedule', type: 'schedule', label: 'جدول السمة (من-إلى)', hint: 'مثال: 21:00-07:00 يعني ليلاً' },
+      { key: 'autoDark', type: 'theme', label: 'سمة الليل التلقائية', hint: 'تظهر تلقائياً في وضع auto/scheduled' },
+      { key: 'autoLight', type: 'theme', label: 'سمة النهار التلقائية', hint: 'تظهر نهاراً في وضع auto/scheduled' },
       { key: 'accent', type: 'accent', label: 'اللون المميّز', hint: 'يُطعّم الأزرار والروابط والتدرّجات' },
       { key: 'density', type: 'density', label: 'كثافة الواجهة', hint: 'كم المساحات بين العناصر' },
       { key: 'textSize', type: 'segmented', label: 'حجم الخط', options: ['sm', 'md', 'lg', 'xl'], hint: 'كبّر لقراءة أريح' },
@@ -212,6 +249,13 @@ export const SETTING_GROUPS = [
       { key: 'showOnlineStatus', type: 'switch', label: 'إظهار حالة الاتصال', hint: 'ليعرف الآخرون أنك متصل' },
       { key: 'captionsAlways', type: 'switch', label: 'ترجمات دائمة' },
       { key: 'dataSaver', type: 'switch', label: 'وضع توفير البيانات', hint: 'يخفض جودة الصور والتحميل' },
+    ],
+  },
+  {
+    id: 'sync', title: 'المزامنة والنسخ الاحتياطي', icon: '☁️',
+    fields: [
+      { key: 'syncSettings', type: 'switch', label: 'مزامنة الإعدادات مع حسابك', hint: 'تحفظ تفضيلاتك عبر الأجهزة والجلسات' },
+      { key: 'backupCode', type: 'code', label: 'رمز النسخ الاحتياطي', hint: 'شاركه لاستعادة تفضيلاتك على جهاز آخر' },
     ],
   },
 ]
