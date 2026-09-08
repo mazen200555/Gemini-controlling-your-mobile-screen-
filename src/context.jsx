@@ -1,5 +1,6 @@
-import { createContext, useContext, useState, useCallback } from 'react'
+import { createContext, useContext, useState, useCallback, useEffect, useRef } from 'react'
 import { NOTIFICATIONS as NOTIF_SEED, STREAMS, SPACES, USERS, FEED, userById, XP_LEVELS, initialXp, initialStreak, WALLET, CURRENCIES, EXCHANGE_TICKS, WITHDRAW_METHODS, CONVERSION_HISTORY } from './data'
+import { loadSettings, saveSettings, applySettings, DEFAULT_SETTINGS } from './settings'
 
 const Ctx = createContext(null)
 
@@ -25,10 +26,53 @@ export function AppProvider({ children }) {
   const [conversionHistory, setConversionHistory] = useState(CONVERSION_HISTORY)
   const [withdrawHistory, setWithdrawHistory] = useState([])
 
+  // ---- rich settings (persisted + live-applied) ----
+  const [settings, setSettingsState] = useState(() => loadSettings())
+  const [settingsOpen, setSettingsOpen] = useState(false)
+  const settingsRef = useRef(settings)
+  settingsRef.current = settings
+
+  const setSetting = useCallback((key, value) => {
+    setSettingsState(prev => {
+      const next = { ...prev, [key]: value }
+      saveSettings(next)
+      applySettings(next)
+      return next
+    })
+  }, [])
+
+  const resetSettings = useCallback(() => {
+    setSettingsState(() => {
+      saveSettings(DEFAULT_SETTINGS)
+      applySettings(DEFAULT_SETTINGS)
+      return { ...DEFAULT_SETTINGS }
+    })
+  }, [])
+
+  // apply once on mount
+  useEffect(() => { applySettings(settings) }, [])
+
   const notify = useCallback((m) => {
     setToast(m)
     clearTimeout(notify._t)
     notify._t = setTimeout(() => setToast(null), 2300)
+    // optional soft chime when sound is enabled
+    if (settingsRef.current?.notifSound) {
+      try {
+        const AC = window.AudioContext || window.webkitAudioContext
+        if (AC) {
+          const ctx = notify._ac || (notify._ac = new AC())
+          if (ctx.state === 'suspended') ctx.resume()
+          const o = ctx.createOscillator(), g = ctx.createGain()
+          o.type = 'sine'; o.frequency.value = 880
+          g.gain.setValueAtTime(0.001, ctx.currentTime)
+          g.gain.exponentialRampToValueAtTime(0.06, ctx.currentTime + 0.02)
+          g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.35)
+          o.connect(g); g.connect(ctx.destination)
+          o.start(); o.stop(ctx.currentTime + 0.36)
+        }
+      } catch (e) { /* ignore */ }
+    }
   }, [])
 
   // navigate with optional target (stream/space/profile) for cross-linking
@@ -162,6 +206,7 @@ export function AppProvider({ children }) {
       wallet, addToWallet, spendFromWallet,
       balances, convert, withdraw, rateOf, priceTick,
       conversionHistory, withdrawHistory,
+      settings, setSetting, resetSettings, settingsOpen, setSettingsOpen,
     }}>
       {children}
     </Ctx.Provider>

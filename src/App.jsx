@@ -17,6 +17,7 @@ import SearchOverlay from './components/SearchOverlay'
 import Notifications from './components/Notifications'
 import ProfileModal from './components/ProfileModal'
 import GoLive from './components/GoLive'
+import SettingsPanel from './components/SettingsPanel'
 import { AI_INSIGHTS, userById, STREAMS } from './data'
 import { Icon, Avatar, Toast, FollowBtn, fmtNum as fmt } from './components/ui'
 import './index.css'
@@ -111,7 +112,7 @@ function LiveActiveBar({ nav }) {
 }
 
 function Shell() {
-  const { page, nav, search, setSearch, setShowSearch, showSearch, setShowNotifs, showNotifs, unread, setGoLiveOpen, toast, openProfile, xp, streak, levelData } = useApp()
+  const { page, nav, search, setSearch, setShowSearch, showSearch, setShowNotifs, showNotifs, unread, setGoLiveOpen, toast, openProfile, xp, streak, levelData, setSettingsOpen } = useApp()
   const [q, setQ] = useState('')
 
   const views = {
@@ -169,6 +170,7 @@ function Shell() {
               <div style={{ fontWeight: 700, fontSize: 13 }}>{me.name}</div>
               <div className="muted" style={{ fontSize: 11 }}>@{me.handle}</div>
             </div>
+            <button className="icon-btn" style={{ width: 34, height: 34 }} title="الإعدادات" onClick={(e) => { e.stopPropagation(); setSettingsOpen(true) }}><Icon name="settings" size={16} /></button>
           </div>
         </aside>
 
@@ -186,6 +188,7 @@ function Shell() {
               </button>
               <button className="icon-btn" onClick={() => nav('aistudio')} title="استوديو الذكاء"><Icon name="ai" size={20} /></button>
               <button className="icon-btn" title="التحليلات"><Icon name="chart" size={20} /></button>
+              <button className="icon-btn" title="الإعدادات" onClick={() => setSettingsOpen(true)}><Icon name="settings" size={20} /></button>
               <button className="icon-btn" title="إشعارات" onClick={() => setShowNotifs(!showNotifs)}>
                 <Icon name="bell" size={20} />{unread > 0 && <span className="dot" />}
               </button>
@@ -209,6 +212,7 @@ function Shell() {
         ))}
       </nav>
 
+      <SettingsPanel />
       <ProfileModal />
       <GoLive />
       <Toast message={toast} />
