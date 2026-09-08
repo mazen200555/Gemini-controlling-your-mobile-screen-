@@ -1,8 +1,10 @@
 import { useState } from 'react'
 import { FEED, STREAMS, userById } from '../data'
 import { Icon, Avatar, fmtNum, Toast } from '../components/ui'
+import { useApp } from '../context'
 
-export default function Home({ onNav }) {
+export default function Home() {
+  const { nav, openProfile } = useApp()
   const [posts, setPosts] = useState(FEED)
   const [text, setText] = useState('')
   const [toast, setToast] = useState(null)
@@ -52,7 +54,7 @@ export default function Home({ onNav }) {
       {/* Live strip */}
       <div className="strip">
         {STREAMS.map((s, i) => (
-          <div className="live-card" key={s.id} onClick={() => onNav('live')}>
+          <div className="live-card" key={s.id} onClick={() => nav('live', { streamId: s.id })}>
             <div className="live-thumb">
               <div className="glow" style={{ background: `linear-gradient(135deg, hsl(${170 + i * 40},70%,45%), hsl(${270 + i * 20},70%,50%))` }} />
               <div className="cover-icon">🎮</div>
@@ -114,7 +116,7 @@ export default function Home({ onNav }) {
               </span>
               <span className="post-action"><Icon name="comment" size={17} /> {fmtNum(post.replies)}</span>
               <span className="post-action"><Icon name="retweet" size={17} /> {fmtNum(post.reposts)}</span>
-              <span className="post-action" style={{ marginRight: 'auto' }} onClick={() => onNav('live')}><Icon name="share" size={17} /> مشاركة</span>
+              <span className="post-action" style={{ marginRight: 'auto' }} onClick={() => nav('live')}><Icon name="share" size={17} /> مشاركة</span>
             </div>
             {post.comments.length > 0 && (
               <div className="comments">

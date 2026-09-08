@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { STREAMS, CHAT_SEED, CHAT_POOL, userById, hash } from '../data'
 import { Icon, Avatar, fmtNum, Toast } from '../components/ui'
+import { useApp } from '../context'
 
 const EMOJI = ['🔥', '❤️', '🎉', '👏', '😂', '💜', '🚀', '🤯', '🎊', '🕺']
 const GIFTS = [
@@ -12,16 +13,17 @@ const GIFTS = [
   { emoji: '💎', name: 'ماسة', cost: 200 },
 ]
 
-export default function Live({ onNav }) {
-  const stream = STREAMS[0]
+export default function Live() {
+  const { navTarget, toggleFollow, followed } = useApp()
+  const stream = STREAMS.find(s => s.id === navTarget?.streamId) || STREAMS[0]
   const host = userById(stream.host)
+  const isFollowing = !!followed[host.id]
 
   const [msgs, setMsgs] = useState(() => CHAT_SEED.map(m => ({ ...m, id: 's' + Math.random() })))
   const [viewers, setViewers] = useState(stream.viewers)
   const [msg, setMsg] = useState('')
   const [floats, setFloats] = useState([])
   const [muted, setMuted] = useState(false)
-  const [followed, setFollowed] = useState(false)
   const [toast, setToast] = useState(null)
   const [pulse, setPulse] = useState(0)
   const listRef = useRef()
@@ -109,8 +111,8 @@ export default function Live({ onNav }) {
                 <div style={{ fontWeight: 800, fontSize: 13 }}>{host.name}</div>
                 <div className="muted" style={{ fontSize: 11 }}>{fmtNum(host.followers)} متابع</div>
               </div>
-              <button className="btn sm" style={{ background: followed ? 'rgba(255,255,255,.1)' : 'var(--grad)', color: '#fff' }} onClick={() => { setFollowed(!followed); notify(followed ? 'ألغيت المتابعة' : 'تابعت البث 💜') }}>
-                {followed ? 'متابع ✓' : 'متابعة'}
+              <button className="btn sm" style={{ background: isFollowing ? 'rgba(255,255,255,.1)' : 'var(--grad)', color: '#fff' }} onClick={() => toggleFollow(host.id)}>
+                {isFollowing ? 'متابع ✓' : 'متابعة'}
               </button>
             </div>
           </div>

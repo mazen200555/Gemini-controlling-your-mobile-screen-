@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { AD_CAMPAIGNS, toArabic } from '../data'
 import { Icon, Progress, Toast } from '../components/ui'
 
-export default function Ads({ onNav }) {
+export default function Ads() {
   const [toast, setToast] = useState(null)
   const notify = (m) => { setToast(m); setTimeout(() => setToast(null), 2200) }
   const { budget, campaigns, audiences } = AD_CAMPAIGNS

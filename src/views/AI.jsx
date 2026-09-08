@@ -1,8 +1,10 @@
 import { useState } from 'react'
-import { AI_INSIGHTS, userById, toArabic } from '../data'
+import { AI_INSIGHTS, userById } from '../data'
 import { Icon, Avatar, Progress, Toast } from '../components/ui'
+import { useApp } from '../context'
 
-export default function AI({ onNav }) {
+export default function AI() {
+  const { nav } = useApp()
   const [toast, setToast] = useState(null)
   const notify = (m) => { setToast(m); setTimeout(() => setToast(null), 2200) }
   const { trendScore, sparkline, hotTopics, recommendations, engagement, sentiment } = AI_INSIGHTS
@@ -55,7 +57,7 @@ export default function AI({ onNav }) {
             {recommendations.map(r => {
               const cu = userById(r.by)
               return (
-                <div className="rec-card" key={r.id} style={{ position: 'relative' }} onClick={() => onNav('live')}>
+                <div className="rec-card" key={r.id} style={{ position: 'relative' }} onClick={() => nav('live', { streamId: 's2' })}>
                   <span className="pill grad match">{r.match}% مطابقة</span>
                   <div className="flex" style={{ alignItems: 'center', gap: 10 }}>
                     <Avatar user={cu} size="md" />

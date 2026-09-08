@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { SPACES, userById, hash } from '../data'
 import { Icon, Avatar, LiveBadge, fmtNum, Toast } from '../components/ui'
+import { useApp } from '../context'
 
 function Wave({ seed }) {
   const bars = new Array(9).fill(0).map((_, i) => 0)
@@ -14,14 +15,20 @@ function Wave({ seed }) {
 }
 
 export default function Spaces() {
+  const { navTarget } = useApp()
   const [spaces, setSpaces] = useState(SPACES)
   const [toast, setToast] = useState(null)
   const [joined, setJoined] = useState(false)
   const [micOn, setMicOn] = useState(true)
-  const [active, setActive] = useState(SPACES[0].id)
+  const [active, setActive] = useState(navTarget?.spaceId || SPACES[0].id)
 
   const notify = (m) => { setToast(m); setTimeout(() => setToast(null), 2200) }
-  const activeSpace = spaces.find(s => s.id === active)
+  const activeSpace = spaces.find(s => s.id === active) || spaces[0]
+
+  // keep hero in sync when a space is picked from search / other pages
+  useEffect(() => {
+    if (navTarget?.spaceId) setActive(navTarget.spaceId)
+  }, [navTarget])
 
   const join = (space) => {
     setJoined(true)
