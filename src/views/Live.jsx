@@ -119,6 +119,9 @@ export default function Live() {
         </div>
       </div>
 
+      {/* AI Companion — live analysis while watching */}
+      <AIAssistant stream={stream} host={host} />
+
       {/* Gifts */}
       <div className="card mt-2" style={{ padding: 18 }}>
         <div className="flex" style={{ alignItems: 'center', marginBottom: 14 }}>
@@ -167,6 +170,81 @@ export default function Live() {
       </div>
 
       <Toast message={toast} />
+    </div>
+  )
+}
+
+// AI companion: streams live watch-analysis while the video plays
+function AIAssistant({ stream, host }) {
+  const { addXp, notify } = useApp()
+  const [insight, setInsight] = useState('بدأ الذكاء بتحليل البثّ...')
+  const [sentiment, setSentiment] = useState(74)
+  const [next, setNext] = useState('...')
+  const [tip, setTip] = useState('')
+
+  const INSIGHTS = [
+    'الذكاء يرصد ارتفاعاً في التفاعل حول لحظة اللعب هذه 🔥',
+    'أغلبية التعليقات إيجابية — الجمهور يحب المحتوى الحالي 💜',
+    'تم التقاط سؤال متكرر من الدردشة: «كيف تحترف؟» — أجب عنه لاحقاً.',
+    'يقترح الذكاء تثبيت إعلان TechGulf في ذروة المشاهدة الآن 📣',
+    'مقطع «اللقطة الأخيرة» مؤهّل للنشر كمقطع قصير، جاهز للتوليد AI.',
+    'يتوقع الذكاء موجة متابعين جديدة بعد 2 دقيقة من هذا التحدّي.',
+    'تحديد 3 لحظات ذهبية لهذا البثّ في السجلّ (للرجوع لاحقاً).',
+  ]
+  const TIPS = [
+    'ولّد تعليقاً تلقائياً عبر زر AI في المشغّل',
+    'استخدم «لقطة» لالتقاط لحظة مميزة الآن',
+    'نشّر الذروة كمقطع قصير بدلاً من الإعادة',
+  ]
+  const NEXT = [
+    'شجّع الجمهور بصوتك في الدقائق القادمة',
+    'اسأل الجمهور: أي نتيجة تتوقّعون؟',
+    'ثبّت التعليق الأكثر إعجاباً أعلى الدردشة',
+  ]
+
+  useEffect(() => {
+    const pick = (arr) => arr[Math.floor(Math.random() * arr.length)]
+    const iv = setInterval(() => {
+      setInsight(pick(INSIGHTS))
+      setTip(pick(TIPS))
+      setNext(pick(NEXT))
+      setSentiment(s => Math.min(98, Math.max(44, s + Math.floor(Math.random() * 16 - 8))))
+    }, 5200)
+    return () => clearInterval(iv)
+  }, [])
+
+  const sentimentColor = sentiment > 66 ? 'var(--green)' : sentiment > 45 ? 'var(--amber)' : 'var(--red)'
+
+  return (
+    <div className="card mt-2" style={{ padding: 20, background: 'linear-gradient(135deg, rgba(139,92,246,.16), rgba(236,72,153,.1))' }}>
+      <div className="flex" style={{ alignItems: 'center', marginBottom: 12 }}>
+        <span className="vp-ai-badge"><Icon name="sparkle" size={12} /> NEXA AI</span>
+        <span style={{ fontWeight: 800, marginRight: 10 }}>مرافقة حيّة للبثّ</span>
+        <span className="pill violet" style={{ marginRight: 'auto' }}>تُحدّث لحظياً</span>
+      </div>
+      <div className="grid-2" style={{ alignItems: 'center', gap: 16 }}>
+        <div>
+          <div style={{ fontSize: 15, lineHeight: 1.7 }}>🧠 {insight}</div>
+          <div className="flex gap-sm mt-1" style={{ flexWrap: 'wrap' }}>
+            <span className="pill cyan">💡 نصيحة: {tip}</span>
+            <span className="pill soft">⏭️ التالي: {next}</span>
+          </div>
+          <div className="flex gap-sm mt-1" style={{ flexWrap: 'wrap' }}>
+            <button className="btn sm ghost" onClick={() => { addXp(10, 'تحليل AI'); notify('🎙️ ضُبط المساعد الصوتي لتوليد صوت للتعليق') }}>تشغيل المساعد الصوتي</button>
+            <button className="btn sm ghost" onClick={() => { addXp(10, 'تحليل AI'); notify('📊 فُتح جدول تحليلات البثّ') }}>تفاصيل التحليل</button>
+          </div>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16, justifyContent: 'flex-end' }}>
+          <div className="center" style={{ flexDirection: 'column', gap: 4 }}>
+            <div style={{ fontSize: 34, fontWeight: 900, color: sentimentColor }}>{sentiment}%</div>
+            <div className="muted" style={{ fontSize: 12 }}>مزاج الجمهور</div>
+          </div>
+          <div style={{ width: 120 }}>
+            <div className="muted" style={{ fontSize: 11, marginBottom: 6 }}>التفاعل الحي</div>
+            <div className="bar" style={{ height: 10 }}><div style={{ width: `${sentiment}%`, background: sentimentColor }} /></div>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }

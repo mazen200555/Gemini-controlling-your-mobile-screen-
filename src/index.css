@@ -686,3 +686,25 @@ img { display: block; max-width: 100%; }
 }
 .curr-select:focus, .curr-input:focus { border-color: var(--violet); }
 .curr-input { font-weight: 800; font-size: 20px; margin-top: 8px; }
+
+/* ---------- AI commentary + sound indicators (video player) ---------- */
+.vp-commentary {
+  position: absolute; bottom: 96px; right: 14px; left: 14px; z-index: 4;
+  background: linear-gradient(135deg, rgba(139,92,246,.92), rgba(236,72,153,.9));
+  border-radius: 12px; padding: 9px 12px; display: flex; align-items: center; gap: 10px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.4); backdrop-filter: blur(4px);
+}
+.vp-ai-badge {
+  display: inline-flex; align-items: center; gap: 4px; font-size: 10px; font-weight: 900;
+  background: #fff; color: #6d28d9; padding: 3px 7px; border-radius: 999px; white-space: nowrap;
+}
+.vp-ai-text { flex: 1; font-weight: 700; font-size: 13px; color: #fff; line-height: 1.4; }
+.vp-ai-meta { font-size: 11px; font-weight: 800; color: rgba(255,255,255,.85); white-space: nowrap; }
+.vp-sound-pill {
+  position: absolute; top: 14px; left: 14px; z-index: 4;
+  background: rgba(0,0,0,.55); padding: 5px 12px; border-radius: 999px;
+  font-size: 11px; font-weight: 800; display: inline-flex; align-items: center; gap: 6px;
+}
+.vp-sound-pill .pulse { width: 7px; height: 7px; border-radius: 50%; background: var(--green); animation: pulse 1.2s infinite; }
+.vbtn.off { background: rgba(255,255,255,.12); opacity: .55; }
+.vbtn.ai-on { background: linear-gradient(135deg, #8b5cf6, #ec4899); font-size: 12px; }
